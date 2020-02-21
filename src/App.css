@@ -5,6 +5,26 @@
   line-height: 1.5;
 }
 
+.visuallyhidden {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  width: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+}
+
+.autofocus-setting {
+  display: block;
+  margin: 1em 0;
+}
+
+.autofocus-setting input {
+  margin-right: 0.5em;
+}
+
 .error-summary {
   padding: 1em;
   border: 1px solid red;
@@ -15,6 +35,10 @@
 }
 .error-summary p:first-child {
   margin-bottom: 0.5em;
+}
+
+.implementation-notes {
+  margin-bottom: 1em;
 }
 
 .nav-buttons {

@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { Form, Field } from "react-final-form";
 
-const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const validateRequired = value => (!value ? "Required" : undefined);
 const validateNotFerrari = value =>
   validateRequired(value) ||
@@ -105,10 +104,27 @@ const A11yForm = ({ handleSubmit, errors, submitFailed }) => {
     </form>
   );
 };
+
+const Notes = () => (
+  <details className="implementation-notes">
+    <summary>Notes on implementation</summary>
+    <ul>
+      <li>
+        Labels are not associated with input. Screenreader can't announce field
+        label when tabbing through
+      </li>
+      <li>aria-required attribute is not present on required fields</li>
+      <li>aria-invalid attribute is not present on fields with errors</li>
+      <li>No screenreader feedback on failed submission</li>
+    </ul>
+  </details>
+);
+
 const FormNoA11y = () => {
   return (
     <div>
-      <h2>Forms with poor a11y</h2>
+      <h2>Form with poor a11y</h2>
+      <Notes />
       <Form
         onSubmit={async () => {
           alert(

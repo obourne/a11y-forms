@@ -4,21 +4,22 @@ import FormSubmit from "./FormSubmit";
 import FormNoA11y from "./FormNoA11y";
 import "./App.css";
 const formsList = [
-  { id: "no-a11y", name: "Poor a11y" },
-  { id: "live", name: "Live validation" },
-  { id: "submit", name: "Submit validation" }
+  { id: "live", name: "Instant validation with auto focus" },
+  { id: "submit", name: "Submit validation with summary alert" },
+  { id: "no-a11y", name: "Poor a11y" }
 ];
 const App = () => {
-  const [form, setForm] = useState("no-a11y");
+  const [form, setForm] = useState(formsList[0].id);
 
   return (
     <div className="App">
-      <h1>A11y Forms Example</h1>
+      <h1>Accessible Forms Examples</h1>
       <nav className="nav-buttons">
         {formsList.map(({ id, name }) => {
           const selected = form === id;
           return (
             <button
+              key={id}
               className={selected ? "button-active" : undefined}
               aria-pressed={selected}
               onClick={() => setForm(id)}

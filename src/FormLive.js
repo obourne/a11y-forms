@@ -12,7 +12,9 @@ const validateNotFerrari = value =>
 const LabelledField = ({
   label,
   instruction,
-  "aria-required": required,
+  autoComplete,
+  "aria-required": ariaRequired,
+  required,
   ...props
 }) => {
   return (
@@ -37,9 +39,10 @@ const LabelledField = ({
             <input
               {...input}
               id={inputId}
-              aria-invalid={Boolean(errorId)}
+              aria-invalid={Boolean(error)}
               aria-describedby={describedBy}
-              aria-required={required}
+              aria-required={required || ariaRequired}
+              autoComplete={autoComplete}
             />
             {errorId && (
               <p className="field-error-message" id={errorId}>
@@ -71,12 +74,17 @@ const focusFirstErrorIfFailed = (formRef, errors) => {
   });
 };
 
-const A11yForm = ({ handleSubmit, errors }) => {
+const A11yForm = ({
+  handleSubmit,
+  errors,
+  submitFailed,
+  dirtySinceLastSubmit
+}) => {
   const formRef = useRef(null);
+  const disabledSubmit = submitFailed && !dirtySinceLastSubmit;
 
   return (
     <form
-      autoComplete="off"
       onSubmit={event => {
         handleSubmit(event);
         focusFirstErrorIfFailed(formRef, errors);
@@ -87,12 +95,14 @@ const A11yForm = ({ handleSubmit, errors }) => {
         name="firstName"
         label="First Name"
         validate={validateRequired}
+        autoComplete="given-name"
         aria-required
       />
       <LabelledField
         name="lastName"
         label="Last Name"
         validate={validateRequired}
+        autoComplete="family-name"
         aria-required
       />
       <LabelledField
@@ -100,19 +110,69 @@ const A11yForm = ({ handleSubmit, errors }) => {
         label="Password"
         instruction='Enter anything except "ferrari"'
         type="password"
+        autoComplete="new-password"
         validate={validateNotFerrari}
         aria-required
       />
-      <button className="submit-button" type="submit">
+      <button
+        className="submit-button"
+        type="submit"
+        aria-disabled={disabledSubmit}
+        aria-describedby="submit-disabled-note"
+      >
         Submit
       </button>
+      <p className="visuallyhidden" id="submit-disabled-note">
+        There are errors to address
+      </p>
     </form>
   );
 };
+
+const Notes = () => (
+  <details className="implementation-notes">
+    <summary>Notes on implementation and screenreader experience</summary>
+    <ul>
+      <li>
+        On submit failure focus is moved to the first field with an error. This
+        will result in the field being announced as being invalid and the error
+        message read out.
+      </li>
+      <li>
+        Error messages are shown after exiting fields but they aren't announced
+        to screenreader users until they try to submit. This is because reading
+        out the error messages using a live region would be too distracting and
+        would compete with announcing the next field when tabbing between
+        fields. This way sighted users benefit from early validation but
+        screenreader users aren't overwhelmed with messages.
+      </li>
+      <li>
+        Submit button is marked as aria-disabled when unaddressed errors are
+        present. It's also associated with hint using aria-describedby to
+        explain the disabled state.
+      </li>
+      <li>Labels are correctly associated with inputs</li>
+      <li>
+        aria-required and aria-invalid states set appropriately to ensure they
+        are announced
+      </li>
+      <li>
+        Error messages and instructions linked to inputs using aria-describedby
+      </li>
+      <li>
+        Correct autocomplete values set to allow autopopulation when possible
+      </li>
+    </ul>
+  </details>
+);
+
 const FormLive = () => {
   return (
     <div>
-      <h2>Forms with live validation</h2>
+      <h2>
+        Form with validation as you type and autofocus first field on submit
+      </h2>
+      <Notes />
       <Form
         onSubmit={async () => {
           alert(
